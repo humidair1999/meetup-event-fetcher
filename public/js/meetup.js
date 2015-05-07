@@ -20,9 +20,36 @@
     $.extend(Plugin.prototype, {
         init: function() {
             console.log("xD");
+
+            this.retrieveEvents(this.settings.groupName, this.settings.sigId, this.settings.sig);
         },
-        yourOtherFunction: function() {
-            // some logic
+        retrieveEvents: function(groupName, sigId, sig) {
+            console.log(groupName);
+
+            $.ajax({
+                url: 'http://api.meetup.com/2/events',
+                type: 'get',
+                dataType: 'jsonp',
+                data: {
+                    status: 'upcoming',
+                    order: 'time',
+                    limited_events: 'False',
+                    group_urlname: groupName,
+                    desc: false,
+                    offset: 0,
+                    // TODO: weird signature literally requires 3 results?
+                    page: 3,
+                    fields: '',
+                    sig_id: sigId,
+                    sig: sig
+                }
+            }).done(function(data) {
+                console.log('done: ', groupName);
+                console.log(data);
+            }).fail(function(err) {
+                console.log('fail', groupName);
+                console.log(err);
+            })
         }
     });
 

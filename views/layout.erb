@@ -11,11 +11,24 @@
         <script src="/js/meetup.js"></script>
 
         <script>
-            $('#dbc-chicago-events-list').meetupEventFetcher();
+            $('#dbc-chicago-events-list').meetupEventFetcher({
+                groupName: 'Chicago-DevBootcamp-Speaker-Series',
+                sigId: 145924542,
+                sig: 'cb896554dd276f6f96dd553a21991866442a76c9'
+            });
 
-            $('#dbc-nyc-events-list').meetupEventFetcher();
+            // TODO: change groupName to DBC-NYC?
+            $('#dbc-nyc-events-list').meetupEventFetcher({
+                groupName: 'DBCx-NYC',
+                sigId: 145924542,
+                sig: 'bef28184f250102d74b824425bcc1860f17519a8'
+            });
 
-            $('#dbc-sf-events-list').meetupEventFetcher();
+            $('#dbc-sf-events-list').meetupEventFetcher({
+                groupName: 'DBCx-SF-Dev-Bootcamp-San-Francisco-Open-Learning',
+                sigId: 145924542,
+                sig: '466e0496a29517e76fea5f07ada41d6e3c12a4b5'
+            });
         </script>
     </body>
 </html>
