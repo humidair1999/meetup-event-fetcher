@@ -1,12 +1,21 @@
 <!doctype html>
 <html>
     <head>
-        <title>lol</title>
+        <title>Meetup Event Fetcher</title>
     </head>
 
     <body>
         <%= yield %>
 
+        <script src="/js/vendor/jquery-1.11.3.js"></script>
         <script src="/js/meetup.js"></script>
+
+        <script>
+            $('#dbc-chicago-events-list').meetupEventFetcher();
+
+            $('#dbc-nyc-events-list').meetupEventFetcher();
+
+            $('#dbc-sf-events-list').meetupEventFetcher();
+        </script>
     </body>
 </html>
