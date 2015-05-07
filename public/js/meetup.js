@@ -1,7 +1,10 @@
 ;(function($, window, document, undefined) {
     "use strict";
 
+    // plugin variables and constructors
+
     var pluginName = "meetupEventFetcher",
+        // TODO: any defaults needed?
         defaults = {
             propertyName: "value"
         };
@@ -14,12 +17,45 @@
         this._defaults = defaults;
         this._name = pluginName;
 
+        this._events = [];
+
         this.init();
     };
 
+    // event constructor
+
+    var Event = function(opts) {
+        console.log('event');
+
+        this.name = opts.name;
+        this.date = opts.date;
+        this.time = opts.time;
+        this.url = opts.url;
+
+        this.initialize();
+    };
+
+    Event.prototype.initialize = function() {
+        console.log('init');
+
+        this.createElement();
+    };
+
+    Event.prototype.createElement = function() {
+        this.el = '<div class="calendar-details">' +
+                    '<a href="' + this.url + '" class="button right">RSVP</a>' +
+                    '<p class="title">' + this.name + '</p>' +
+                    '<p class="time">' + this.date + ' | ' + this.time + '</p>' +
+                    '</div>';
+
+        console.log(this.el);
+    };
+
+    // plugin prototypal methods
+
     $.extend(Plugin.prototype, {
         init: function() {
-            console.log("xD");
+            console.log("init plugin");
 
             this.retrieveEvents(this.settings.groupName, this.settings.sigId, this.settings.sig);
         },
@@ -43,18 +79,43 @@
                     sig_id: sigId,
                     sig: sig
                 }
-            }).done(function(data) {
-                console.log('done: ', groupName);
-                console.log(data);
-            }).fail(function(err) {
+            })
+            .done(this.createEvents.bind(this))
+            .fail(function(err) {
                 console.log('fail', groupName);
                 console.log(err);
-            })
+            });
+        },
+        createEvents: function(data) {
+            var that = this,
+                events = data.results;
+
+            console.log(events);
+
+            try {
+                $.each(events, function(idx, item) {
+                    that._events.push(new Event({
+                        name: item.name,
+                        date: item.time,
+                        time: item.time,
+                        url: item.event_url
+                    }))
+
+                    console.log(that._events);
+                });
+            }
+            catch(err) {
+                console.log(that._name, ': api call failed; check your query params and signature!');
+            }
+
+            if (this._events.length) {
+                console.log('DO STUFF WITH EVENTS');
+            }
         }
     });
 
-    // A really lightweight plugin wrapper around the constructor,
-    // preventing against multiple instantiations
+    // lightweight plugin wrapper around the constructor, preventing against
+    //  multiple instantiations
     $.fn[pluginName] = function(options) {
         return this.each(function() {
             if (!$.data(this, "plugin_" + pluginName)) {
