@@ -29,6 +29,9 @@
         this.time = opts.time;
         this.url = opts.url;
 
+        // element will eventually be created using event data
+        this.el = null;
+
         this.initialize();
     };
 
@@ -40,9 +43,11 @@
 
     Event.prototype.createElement = function() {
         var eventHtml = '<li>' +
-                            '<a href="' + this.url + '" class="button right">RSVP</a>' +
-                            '<p class="title">' + this.name + '</p>' +
-                            '<p class="time">' + this.date + ' | ' + this.time + '</p>' +
+                            '<strong class="dbc-location-event-list__header">' + this.name + '</strong>' +
+                            '<span class="dbc-location-event-list__details">' + this.date + ' at ' + this.time + '</span>' +
+                            '<a href="' + this.url + '" class="dbc-location-event-list__rsvp">' +
+                                'RSVP <i class="fa fa-angle-double-right" aria-hidden="true"></i>' +
+                            '</a>' +
                         '</li>';
 
         this.el = $.parseHTML(eventHtml);
