@@ -4,13 +4,12 @@
     // plugin variables and constructors
 
     var pluginName = "meetupEventFetcher",
-        // TODO: any defaults needed?
-        defaults = {
-            propertyName: "value"
-        };
+        // TODO: any defaults needed? client-side template of some sort?
+        defaults = {};
 
     var Plugin = function(element, options) {
         this.element = element;
+        this.$element = $(element);
 
         this.settings = $.extend({}, defaults, options);
 
@@ -25,8 +24,6 @@
     // event constructor
 
     var Event = function(opts) {
-        console.log('event');
-
         this.name = opts.name;
         this.date = opts.date;
         this.time = opts.time;
@@ -36,31 +33,31 @@
     };
 
     Event.prototype.initialize = function() {
-        console.log('init');
+        console.log('init event: ', this);
 
         this.createElement();
     };
 
     Event.prototype.createElement = function() {
-        this.el = '<div class="calendar-details">' +
-                    '<a href="' + this.url + '" class="button right">RSVP</a>' +
-                    '<p class="title">' + this.name + '</p>' +
-                    '<p class="time">' + this.date + ' | ' + this.time + '</p>' +
-                    '</div>';
+        var eventHtml = '<li>' +
+                            '<a href="' + this.url + '" class="button right">RSVP</a>' +
+                            '<p class="title">' + this.name + '</p>' +
+                            '<p class="time">' + this.date + ' | ' + this.time + '</p>' +
+                        '</li>';
 
-        console.log(this.el);
+        this.el = $.parseHTML(eventHtml);
     };
 
     // plugin prototypal methods
 
     $.extend(Plugin.prototype, {
         init: function() {
-            console.log("init plugin");
-
             this.retrieveEvents(this.settings.groupName, this.settings.sigId, this.settings.sig);
         },
         retrieveEvents: function(groupName, sigId, sig) {
-            console.log(groupName);
+            var that = this;
+
+            // TODO: some sort of loading indicator within element waiting for events?
 
             $.ajax({
                 url: 'http://api.meetup.com/2/events',
@@ -82,26 +79,27 @@
             })
             .done(this.createEvents.bind(this))
             .fail(function(err) {
-                console.log('fail', groupName);
-                console.log(err);
+                console.log(that._name, ': api call failed; check your datatype, query params, and signature!');
+            })
+            .always(function() {
+                // TODO: remove loading indicator from element?
             });
         },
         createEvents: function(data) {
             var that = this,
                 events = data.results;
 
-            console.log(events);
-
+            // a failed jsonp request still succeeds, unfortunately, so we'll use a
+            //  try/catch to make sure we have actual data
             try {
+                // TODO: need to handle missing properties?
                 $.each(events, function(idx, item) {
                     that._events.push(new Event({
                         name: item.name,
                         date: item.time,
                         time: item.time,
                         url: item.event_url
-                    }))
-
-                    console.log(that._events);
+                    }));
                 });
             }
             catch(err) {
@@ -109,8 +107,15 @@
             }
 
             if (this._events.length) {
-                console.log('DO STUFF WITH EVENTS');
+                this.renderEvents();
             }
+        },
+        renderEvents: function() {
+            var that = this;
+
+            $.each(this._events, function(idx, item) {
+                that.$element.append(item.el);
+            });
         }
     });
 
