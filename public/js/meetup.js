@@ -23,52 +23,48 @@
     // event constructor
 
     var Event = function(opts) {
-        this.isDateTimeValid = true;
-
         this.name = opts.name;
         this.date = this.formatDate(opts.date);
         this.time = this.formatTime(opts.date);
         this.url = opts.url;
 
-        // element will eventually be created using event data
+        // html element will eventually be created using event data
         this.el = null;
 
         this.initialize();
     };
 
     Event.prototype.initialize = function() {
-        console.log('init event: ', this);
-
         this.checkDateTimeValidity();
 
         this.createElement();
     };
 
     Event.prototype.formatDate = function(dateTime) {
-        var momentObj = moment(dateTime, 'x');
+        var formattedDate = null,
+            momentObj = moment(dateTime, 'x');
 
         if (momentObj.isValid()) {
-            return momentObj.format('ddd, MMM Do, YYYY');
+            formattedDate = momentObj.format('ddd, MMM Do, YYYY');
         }
-        else {
-            this.isDateTimeValid = false;
-        }
+
+        return formattedDate;
     };
 
     Event.prototype.formatTime = function(dateTime) {
-        var momentObj = moment(dateTime, 'x');
+        var formattedTime = null,
+            momentObj = moment(dateTime, 'x');
 
         if (momentObj.isValid()) {
             // TODO: timezone abbreviation has been deprecated in momentjs; find alternative?
-            return momentObj.format('hh:mm A (ZZ)');
+            formattedTime = momentObj.format('hh:mm A (ZZ)');
         }
-        else {
-            this.isDateTimeValid = false;
-        }
+
+        return formattedTime;
     };
 
     Event.prototype.checkDateTimeValidity = function() {
-        if (!this.isDateTimeValid) {
+        if (!this.date || !this.time) {
             this.date = 'see event website for details';
             this.time = '';
         }
@@ -91,16 +87,7 @@
 
     $.extend(Plugin.prototype, {
         init: function() {
-            this.events.push(new Event({
-                name: 'fake event',
-                date: 1431383400000,
-                time: 1431383400000,
-                url: 'http://www.metup.com/lol'
-            }));
-
-            this.renderEvents();
-
-            // this.retrieveEvents(this.settings.groupName, this.settings.sigId, this.settings.sig);
+            this.retrieveEvents(this.settings.groupName, this.settings.sigId, this.settings.sig);
         },
         retrieveEvents: function(groupName, sigId, sig) {
             var that = this;
