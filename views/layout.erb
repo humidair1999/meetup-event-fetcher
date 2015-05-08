@@ -17,6 +17,54 @@
         <script src="/js/meetup.js"></script>
 
         <script>
+            // monday, may 11, 2015 @ 5:30pm
+            var epoch = new Date(1431383400000);
+
+            var date = epoch.getUTCDate();
+            var year = epoch.getUTCFullYear();
+            var day = epoch.getUTCDay();
+            var hours = epoch.getUTCHours();
+            var minutes = epoch.getUTCMinutes();
+            var month = epoch.getUTCMonth();
+            var seconds = epoch.getUTCSeconds();
+            var year2 = epoch.getYear();
+
+            // console.log('date: ', date);
+            // console.log('year: ', year);
+            // console.log('day: ', day);
+            // console.log('hours: ', hours);
+            // console.log('minutes: ', minutes);
+            // console.log('month: ', month);
+            // console.log('seconds: ', seconds);
+            // console.log('year2: ', year2);
+
+            console.log(epoch.toString());
+            console.log(epoch.toDateString());
+            console.log(epoch.toTimeString());
+            console.log(epoch.toUTCString());
+            console.log('toLocaleString: ', epoch.toLocaleString());
+
+            console.log(epoch.toJSON());
+
+            // get date
+            var realDate = epoch.toDateString();
+
+            // get time
+            var localeString = epoch.toLocaleString();
+            var realTimeRaw = localeString.substr(localeString.indexOf(' ') + 1);
+            console.log(realTimeRaw);
+            var timeWithoutSeconds = realTimeRaw.slice(0, realTimeRaw.lastIndexOf(':'));
+            var amOrPm = realTimeRaw.substr(realTimeRaw.lastIndexOf(' ') + 1);
+            var realTime = timeWithoutSeconds + ' ' + amOrPm;
+
+            // get timezone
+            var timeString = epoch.toTimeString();
+            var realTimeZone = timeString.substr(timeString.lastIndexOf(' ') + 1);
+
+            console.log(realDate, '@', realTime, realTimeZone);
+        </script>
+
+        <script>
             $('#dbc-chicago-events-list').meetupEventFetcher({
                 groupName: 'Chicago-DevBootcamp-Speaker-Series',
                 sigId: 145924542,
