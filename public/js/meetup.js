@@ -1,9 +1,9 @@
 ;(function($, window, document, undefined) {
-    "use strict";
+    'use strict';
 
     // plugin variables and constructor
 
-    var pluginName = "meetupEventFetcher",
+    var pluginName = 'meetupEventFetcher',
         // TODO: any defaults needed? client-side template of some sort?
         defaults = {};
 
@@ -46,11 +46,13 @@
     };
 
     Event.prototype.formatDate = function(dateTime) {
-        var dateObj = new Date(dateTime);
+        var momentObj = null;
 
         try {
+            momentObj = moment(dateTime, 'x');
+
             // toDateString returns format of: Mon May 11 2015
-            return dateObj.toDateString();
+            return momentObj.format('ddd, MMM Do, YYYY');
         }
         catch(err) {
             console.log(pluginName, ': could not format date; check the format!');
@@ -60,38 +62,13 @@
     };
 
     Event.prototype.formatTime = function(dateTime) {
-        var dateObj = new Date(dateTime),
-            localeString = null,
-            rawTime = null,
-            timeWithoutSeconds = null,
-            amPmEnding = null,
-            timeString = null,
-            timeZone = null;
+        var momentObj = null;
 
         try {
-            // toLocaleString returns format of: 5/11/2015, 3:30:00 PM
-            localeString = dateObj.toLocaleString();
+            momentObj = moment(dateTime, 'x');
 
-            // grab just the time (HH:MM:SS) and AM/PM
-            rawTime = localeString.substr(localeString.indexOf(' ') + 1);
-            console.log(rawTime);
-
-            // slice the seconds off the time, leaving only hours and minutes
-            timeWithoutSeconds = rawTime.slice(0, rawTime.lastIndexOf(':'));
-            console.log(timeWithoutSeconds);
-
-            // grab the "AM" or "PM" ending
-            amPmEnding = rawTime.substr(rawTime.lastIndexOf(' ') + 1);
-            console.log(amPmEnding);
-
-            // toTimeString returns format of: 15:30:00 GMT-0700 (PDT)
-            timeString = dateObj.toTimeString();
-
-            // grab the time zone abbreviation
-            timeZone = timeString.substr(timeString.lastIndexOf(' ') + 1);
-            console.log(timeZone);
-
-            return timeWithoutSeconds + ' ' + amPmEnding + ' ' + timeZone;
+            // TODO: timezone abbreviation has been deprecated in momentjs; find alternative?
+            return momentObj.format('hh:mm A (ZZ)');
         }
         catch(err) {
             console.log(pluginName, ': could not format time; check the format!');
@@ -204,8 +181,8 @@
     //  multiple instantiations
     $.fn[pluginName] = function(options) {
         return this.each(function() {
-            if (!$.data(this, "plugin_" + pluginName)) {
-                $.data(this, "plugin_" + pluginName, new Plugin(this, options));
+            if (!$.data(this, 'plugin_' + pluginName)) {
+                $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
             }
         });
     };
