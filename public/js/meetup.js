@@ -4,7 +4,7 @@
     // plugin variables and constructor
 
     var pluginName = 'meetupEventFetcher',
-        // TODO: any defaults needed? client-side template of some sort?
+        // TODO: any defaults needed?
         defaults = {};
 
     var Plugin = function(element, options) {
@@ -12,11 +12,10 @@
         this.$element = $(element);
 
         this.settings = $.extend({}, defaults, options);
+        this.events = [];
 
         this._defaults = defaults;
         this._name = pluginName;
-
-        this._events = [];
 
         this.init();
     };
@@ -46,33 +45,24 @@
     };
 
     Event.prototype.formatDate = function(dateTime) {
-        var momentObj = null;
+        var momentObj = moment(dateTime, 'x');
 
-        try {
-            momentObj = moment(dateTime, 'x');
-
-            // toDateString returns format of: Mon May 11 2015
+        if (momentObj.isValid()) {
             return momentObj.format('ddd, MMM Do, YYYY');
         }
-        catch(err) {
-            console.log(pluginName, ': could not format date; check the format!');
-
+        else {
             this.isDateTimeValid = false;
         }
     };
 
     Event.prototype.formatTime = function(dateTime) {
-        var momentObj = null;
+        var momentObj = moment(dateTime, 'x');
 
-        try {
-            momentObj = moment(dateTime, 'x');
-
+        if (momentObj.isValid()) {
             // TODO: timezone abbreviation has been deprecated in momentjs; find alternative?
             return momentObj.format('hh:mm A (ZZ)');
         }
-        catch(err) {
-            console.log(pluginName, ': could not format time; check the format!');
-
+        else {
             this.isDateTimeValid = false;
         }
     };
@@ -85,6 +75,7 @@
     };
 
     Event.prototype.createElement = function() {
+        // TODO: add option to use client-side template?
         var eventHtml = '<li>' +
                             '<strong class="dbc-location-event-list__header">' + this.name + '</strong>' +
                             '<span class="dbc-location-event-list__details">' + this.date + ' @ ' + this.time + '</span>' +
@@ -100,7 +91,7 @@
 
     $.extend(Plugin.prototype, {
         init: function() {
-            this._events.push(new Event({
+            this.events.push(new Event({
                 name: 'fake event',
                 date: 1431383400000,
                 time: 1431383400000,
@@ -152,7 +143,7 @@
             try {
                 // TODO: need to handle missing properties?
                 $.each(events, function(idx, item) {
-                    that._events.push(new Event({
+                    that.events.push(new Event({
                         name: item.name,
                         date: item.time,
                         time: item.time,
@@ -164,14 +155,14 @@
                 console.log(that._name, ': api call failed; check your rate limit, query params, and signature!');
             }
 
-            if (this._events.length) {
+            if (this.events.length) {
                 this.renderEvents();
             }
         },
         renderEvents: function() {
             var that = this;
 
-            $.each(this._events, function(idx, item) {
+            $.each(this.events, function(idx, item) {
                 that.$element.append(item.el);
             });
         }
